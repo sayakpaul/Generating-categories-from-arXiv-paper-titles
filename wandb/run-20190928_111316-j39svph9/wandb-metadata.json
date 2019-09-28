@@ -1,0 +1,26 @@
+{
+    "root": "/Users/sayakpaul/Downloads/Deep Learning/Generating-categories-from-arXiv-paper-titles",
+    "program": "<python with no main file>",
+    "git": {
+        "remote": "https://github.com/sayakpaul/Generating-categories-from-arXiv-paper-titles",
+        "commit": "c42bc11685675244f48f008d40449758ac02a8b3"
+    },
+    "email": "spsayakpaul@gmail.com",
+    "startedAt": "2019-09-28T11:15:18.406265",
+    "host": "Sayaks-Air",
+    "username": "sayakpaul",
+    "os": "Darwin-18.2.0-x86_64-i386-64bit",
+    "python": "3.7.1",
+    "executable": "/miniconda3/bin/python",
+    "cpu_count": 4,
+    "args": [
+        "-f",
+        "/Users/sayakpaul/Library/Jupyter/runtime/kernel-7ebf2cac-2fab-48a6-be6d-816a0fc9109a.json"
+    ],
+    "state": "running",
+    "jobType": null,
+    "mode": "run",
+    "name": "ruby-silence-2",
+    "project": "data-preprocessing-and-model-building-1",
+    "heartbeatAt": "2019-09-28T11:15:30.778827"
+}
