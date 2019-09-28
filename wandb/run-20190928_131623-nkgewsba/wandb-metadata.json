@@ -1,0 +1,26 @@
+{
+    "root": "/Users/sayakpaul/Downloads/Deep Learning/Generating-categories-from-arXiv-paper-titles",
+    "program": "<python with no main file>",
+    "git": {
+        "remote": "https://github.com/sayakpaul/Generating-categories-from-arXiv-paper-titles",
+        "commit": "3bb9d0a7bf66a42711b834632bb68fb6ebb5ca45"
+    },
+    "email": "spsayakpaul@gmail.com",
+    "startedAt": "2019-09-28T13:18:05.551331",
+    "host": "Sayaks-Air",
+    "username": "sayakpaul",
+    "os": "Darwin-18.2.0-x86_64-i386-64bit",
+    "python": "3.7.1",
+    "executable": "/miniconda3/bin/python",
+    "cpu_count": 4,
+    "args": [
+        "-f",
+        "/Users/sayakpaul/Library/Jupyter/runtime/kernel-535390b1-aea6-4bdc-8553-e1b1a675a5c4.json"
+    ],
+    "state": "running",
+    "jobType": null,
+    "mode": "run",
+    "name": "logical-dragon-3",
+    "project": "data-preprocessing-and-model-building-1",
+    "heartbeatAt": "2019-09-28T13:18:10.788999"
+}
