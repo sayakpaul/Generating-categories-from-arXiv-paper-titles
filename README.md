@@ -1,8 +1,9 @@
 # Generating-categories-from-arXiv-paper-titles
-This project takes the arXiv dataset and builds an automatic category generator from the paper title. 
+This project takes the [arXiv dataset](https://www.kaggle.com/neelshah18/arxivdataset) and builds an automatic tag classifier from the article titles.  
 
-Dataset used:
-https://www.kaggle.com/neelshah18/arxivdataset
+Example input: Towards Wide Learning: Experiments in Healthcare
+Example output: **stat.ML**, **cs.LG**
 
-References:
-- https://www.kaggle.com/roccoli/multi-label-classification-with-keras
+![](https://i.ibb.co/rwFv6JQ/Screen-Shot-2019-09-27-at-12-58-16-PM.png)
+
+[Link](https://arxiv.org/abs/1612.05730) to the above paper
