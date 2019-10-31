@@ -1,0 +1,104 @@
+{
+    "val_loss": 0.07850775993016153,
+    "_step": 6,
+    "_timestamp": 1572513586.4302218,
+    "categorical_accuracy": 0.7474082112312317,
+    "graph": {
+        "nodes": [
+            {
+                "id": "embedding_input",
+                "output_shape": [
+                    [
+                        null,
+                        300
+                    ]
+                ],
+                "num_parameters": 0,
+                "name": "embedding_input",
+                "class_name": "InputLayer"
+            },
+            {
+                "id": "embedding",
+                "output_shape": [
+                    null,
+                    300,
+                    30
+                ],
+                "num_parameters": 90000,
+                "name": "embedding",
+                "class_name": "Embedding"
+            },
+            {
+                "id": "dropout",
+                "output_shape": [
+                    null,
+                    300,
+                    30
+                ],
+                "num_parameters": 0,
+                "name": "dropout",
+                "class_name": "Dropout"
+            },
+            {
+                "id": "conv1d",
+                "output_shape": [
+                    null,
+                    298,
+                    300
+                ],
+                "num_parameters": 27300,
+                "name": "conv1d",
+                "class_name": "Conv1D"
+            },
+            {
+                "id": "global_max_pooling1d",
+                "output_shape": [
+                    null,
+                    300
+                ],
+                "num_parameters": 0,
+                "name": "global_max_pooling1d",
+                "class_name": "GlobalMaxPooling1D"
+            },
+            {
+                "id": "dense",
+                "output_shape": [
+                    null,
+                    32
+                ],
+                "num_parameters": 9632,
+                "name": "dense",
+                "class_name": "Dense"
+            }
+        ],
+        "_type": "graph",
+        "edges": [
+            [
+                "embedding_input",
+                "embedding"
+            ],
+            [
+                "embedding",
+                "dropout"
+            ],
+            [
+                "dropout",
+                "conv1d"
+            ],
+            [
+                "conv1d",
+                "global_max_pooling1d"
+            ],
+            [
+                "global_max_pooling1d",
+                "dense"
+            ]
+        ],
+        "format": "keras"
+    },
+    "lr": 0.0010000000474974513,
+    "_runtime": 46.671528816223145,
+    "val_categorical_accuracy": 0.6876911520957947,
+    "epoch": 6,
+    "loss": 0.05853120397135646
+}

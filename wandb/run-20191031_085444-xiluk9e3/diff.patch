@@ -1,0 +1,1605 @@
+nbdiff /tmp/q1bXdZ_Data_preprocessing_and_model_building (part I)-checkpoint.ipynb .ipynb_checkpoints/Data_preprocessing_and_model_building (part I)-checkpoint.ipynb
+--- /tmp/q1bXdZ_Data_preprocessing_and_model_building (part I)-checkpoint.ipynb  2019-10-31 10:39:54.698685
++++ .ipynb_checkpoints/Data_preprocessing_and_model_building (part I)-checkpoint.ipynb  2019-10-31 08:50:46.978309
+[34m## inserted before /cells/0:[0m
+[32m+  code cell:
+[32m+    source:
+[32m+      !pip3 install scikit-multilearn
+[32m+  markdown cell:
+[32m+    source:
+[32m+      Run `wandb login` from the terminal after installing `wandb`. 
+[32m+  markdown cell:
+[32m+    source:
+[32m+      ## Imports
+
+[0m[34m## deleted /cells/0:[0m
+[31m-  markdown cell:
+[31m-    source:
+[31m-      **To be included**:
+[31m-      - Comments
+[31m-      - References
+[31m-      
+[31m-      This notebook shows the use of simpler models to classify the titles. 
+
+[0m[34m## inserted before /cells/1/outputs/0:[0m
+[32m+  output:
+[32m+    output_type: stream
+[32m+    name: stderr
+[32m+    text:
+[32m+      [nltk_data] Downloading package stopwords to
+[32m+      [nltk_data]     /home/jupyter/nltk_data...
+[32m+      [nltk_data]   Package stopwords is already up-to-date!
+
+[0m[34m## modified /cells/1/source:[0m
+[36m@@ -4,18 +4,13 @@[m [mfrom sklearn.linear_model import LogisticRegression[m
+ from sklearn.multiclass import OneVsRestClassifier[m
+ from sklearn.naive_bayes import MultinomialNB[m
+ from sklearn.metrics import accuracy_score[m
+[31m-from sklearn.utils import class_weight[m
+ from sklearn.pipeline import Pipeline[m
+ from sklearn.svm import LinearSVC[m
+ from skmultilearn.problem_transform import LabelPowerset[m
+ from nltk.corpus import stopwords[m
+ from ast import literal_eval[m
+[31m-from typing import Union[m
+[31m-import matplotlib.pyplot as plt[m
+[32m+[m[32mfrom utils import utils[m
+ import numpy as np[m
+ import sklearn[m
+ import wandb[m
+[31m-import nltk[m
+[31m-import time[m
+[31m-import re[m
+[31m-import io[m
+[m
+[32m+[m[32mimport time[m
+[m
+
+[0m[34m## inserted before /cells/2:[0m
+[32m+  markdown cell:
+[32m+    source:
+[32m+      ## Data loading
+[32m+  code cell:
+[32m+    execution_count: 2
+[32m+    source:
+[32m+      def load_data(filename:str) -> np.ndarray:
+[32m+          content = np.load(filename, allow_pickle=True)
+[32m+          return content
+
+[0m[34m## deleted /cells/2:[0m
+[31m-  code cell:
+[31m-    execution_count: 2
+[31m-    source:
+[31m-      %matplotlib inline
+[31m-      nltk.download('stopwords')
+[31m-    outputs:
+[31m-      output 0:
+[31m-        output_type: stream
+[31m-        name: stderr
+[31m-        text:
+[31m-          [nltk_data] Downloading package stopwords to
+[31m-          [nltk_data]     /Users/sayakpaul/nltk_data...
+[31m-          [nltk_data]   Package stopwords is already up-to-date!
+[31m-      output 1:
+[31m-        output_type: execute_result
+[31m-        execution_count: 2
+[31m-        data:
+[31m-          text/plain: True
+
+[0m[34m## replaced /cells/3/execution_count:[0m
+[31m-  2
+[32m+  3
+
+[0m[34m## replaced /cells/3/outputs/0/execution_count:[0m
+[31m-  2
+[32m+  3
+
+[0m[34m## modified /cells/3/source:[0m
+[36m@@ -1,4 +1,4 @@[m
+[31m-X_train, y_train = np.load('data/X_train.npy', allow_pickle=True), np.load('data/y_train.npy', allow_pickle=True)[m
+[31m-X_test, y_test = np.load('data/X_test.npy', allow_pickle=True), np.load('data/y_test.npy', allow_pickle=True)[m
+[32m+[m[32mX_train, y_train = load_data('data/X_train.npy'), load_data('data/y_train.npy')[m
+[32m+[m[32mX_test, y_test = load_data('data/X_test.npy'), load_data('data/y_test.npy')[m
+ [m
+ X_train.shape, X_test.shape[m
+[m
+
+[0m[34m## inserted before /cells/4:[0m
+[32m+  markdown cell:
+[32m+    source:
+[32m+      ## Cleaning the paper titles
+[32m+  code cell:
+[32m+    execution_count: 4
+[32m+    source:
+[32m+      clean_title = np.vectorize(utils.clean_title)
+
+[0m[34m## deleted /cells/4:[0m
+[31m-  code cell:
+[31m-    execution_count: 3
+[31m-    source:
+[31m-      wpt = nltk.WordPunctTokenizer()
+[31m-      stop_words = nltk.corpus.stopwords.words('english')
+[31m-      
+[31m-      def clean_title(title):
+[31m-          # lower case and remove special characters\whitespaces
+[31m-          title = re.sub(r'[^a-zA-Z\s]', '', title, re.I|re.A)
+[31m-          title = title.lower()
+[31m-          title = title.strip()
+[31m-          # tokenize document
+[31m-          tokens = wpt.tokenize(title)
+[31m-          # filter stopwords out of document
+[31m-          filtered_tokens = [token for token in tokens if token not in stop_words]
+[31m-          # re-create document from filtered tokens
+[31m-          title = ' '.join(filtered_tokens)
+[31m-          return title
+[31m-      
+[31m-      clean_title = np.vectorize(clean_title)
+
+[0m[34m## replaced /cells/5/execution_count:[0m
+[31m-  4
+[32m+  5
+
+[0m[34m## replaced /cells/6/execution_count:[0m
+[31m-  5
+[32m+  6
+
+[0m[34m## replaced /cells/6/outputs/0/execution_count:[0m
+[31m-  5
+[32m+  6
+
+[0m[34m## modified /cells/6/source:[0m
+[36m@@ -1 +1,2 @@[m
+[32m+[m[32m# Preview[m
+ X_train[:10][m
+[m
+
+[0m[34m## replaced /cells/7/execution_count:[0m
+[31m-  6
+[32m+  7
+
+[0m[34m## replaced /cells/7/outputs/0/execution_count:[0m
+[31m-  6
+[32m+  7
+
+[0m[34m## inserted before /cells/8:[0m
+[32m+  markdown cell:
+[32m+    source:
+[32m+      ## Label preprocessing
+
+[0m[34m## replaced /cells/8/execution_count:[0m
+[31m-  7
+[32m+  8
+
+[0m[34m## replaced /cells/8/outputs/0/execution_count:[0m
+[31m-  7
+[32m+  8
+
+[0m[34m## replaced /cells/9/execution_count:[0m
+[31m-  8
+[32m+  9
+
+[0m[34m## replaced /cells/9/outputs/0/execution_count:[0m
+[31m-  8
+[32m+  9
+
+[0m[34m## replaced /cells/10/execution_count:[0m
+[31m-  9
+[32m+  10
+
+[0m[34m## replaced /cells/10/outputs/0/execution_count:[0m
+[31m-  9
+[32m+  10
+
+[0m[34m## inserted before /cells/11:[0m
+[32m+  markdown cell:
+[32m+    source:
+[32m+      Make sure you don't call `fit_transform` on mlb when you are applying it on the test set as it will disturb the training/serving skew. 
+[32m+  markdown cell:
+[32m+    source:
+[32m+      ## Initial configurations before modeling
+
+[0m[34m## replaced /cells/11/execution_count:[0m
+[31m-  10
+[32m+  11
+
+[0m[34m## modified /cells/11/source:[0m
+[36m@@ -1 +1,2 @@[m
+[32m+[m[32m# Gather the English stopwords[m
+ stop_words = set(stopwords.words('english'))[m
+[m
+
+[0m[34m## inserted before /cells/12:[0m
+[32m+  code cell:
+[32m+    execution_count: 12
+[32m+    source:
+[32m+      # Initialize wandb to log your experiments
+[32m+      wandb.init(project="arxiv-project-simple-models")
+[32m+    outputs:
+[32m+      output 0:
+[32m+        output_type: display_data
+[32m+        data:
+[32m+          text/html:
+[32m+            
+[32m+                            Logging results to <a href="https://wandb.com" target="_blank">Weights & Biases</a>.<br/>
+[32m+                            Project page: <a href="https://app.wandb.ai/sayakpaul/arxiv-project-simple-models" target="_blank">https://app.wandb.ai/sayakpaul/arxiv-project-simple-models</a><br/>
+[32m+                            Run page: <a href="https://app.wandb.ai/sayakpaul/arxiv-project-simple-models/runs/4211t4bq" target="_blank">https://app.wandb.ai/sayakpaul/arxiv-project-simple-models/runs/4211t4bq</a><br/>
+[32m+                            Docs: <a href="https://docs.wandb.com/integrations/jupyter.html" target="_blank">https://docs.wandb.com/integrations/jupyter.html</a><br/>
+[32m+                        
+[32m+          text/plain: <IPython.core.display.HTML object>
+[32m+      output 1:
+[32m+        output_type: execute_result
+[32m+        execution_count: 12
+[32m+        data:
+[32m+          text/plain: W&B Run: https://app.wandb.ai/sayakpaul/arxiv-project-simple-models/runs/4211t4bq
+[32m+  markdown cell:
+[32m+    source:
+[32m+      ## Modeling experiments
+[32m+  markdown cell:
+[32m+    source:
+[32m+      We will define a helper function to train ane evaluate a model. Before you begin the training process you might want to perform any left-over preprocessing. `scikit-learn` makes it easier to define these steps along with your desired machine learning models with _Pipelines_. So, the input to our helper function would be a pipeline. 
+
+[0m[34m## deleted /cells/12:[0m
+[31m-  code cell:
+[31m-    execution_count: 11
+[31m-    source:
+[31m-      wandb.init(project="data-preprocessing-and-model-building-1")
+[31m-    outputs:
+[31m-      output 0:
+[31m-        output_type: display_data
+[31m-        data:
+[31m-          text/html:
+[31m-            
+[31m-                    Notebook configured with <a href="https://wandb.com" target="_blank">W&B</a>. You can <a href="https://app.wandb.ai/sayakpaul/data-preprocessing-and-model-building-1/runs/nkgewsba?apiKey=ab6c21fa98b79790d8c7a9d0a0844b7a1ddaa4e2" target="_blank">open</a> the run page, or call <code>%%wandb</code>
+[31m-                    in a cell containing your training loop to display live results.  Learn more in our <a href="https://docs.wandb.com/docs/integrations/jupyter.html" target="_blank">docs</a>.
+[31m-                
+[31m-          text/plain: <IPython.core.display.HTML object>
+[31m-      output 1:
+[31m-        output_type: execute_result
+[31m-        execution_count: 11
+[31m-        data:
+[31m-          text/plain: W&B Run: https://app.wandb.ai/sayakpaul/data-preprocessing-and-model-building-1/runs/nkgewsba?apiKey=ab6c21fa98b79790d8c7a9d0a0844b7a1ddaa4e2
+
+[0m[34m## replaced /cells/13/execution_count:[0m
+[31m-  12
+[32m+  13
+
+[0m[34m## modified /cells/13/source:[0m
+[36m@@ -8,4 +8,4 @@[m [mdef train_eval_pipeline(pipeline:sklearn.pipeline, train_data:tuple,[m
+     prediction = pipeline.predict(X_test)[m
+     wandb.log({"accuracy":accuracy_score(y_test_binarized, prediction)*100.0,\[m
+                "training_time":end})[m
+[31m-    return f'Accuracy score: {accuracy_score(y_test_binarized, prediction)*100.0}%, model trained in {end} secs'[m
+[m
+[32m+[m[32m    return 'Accuracy score: {}%, model trained in {} secs'.format(accuracy_score(y_test_binarized, prediction)*100.0, end)[m
+[m
+
+[0m[34m## inserted before /cells/14:[0m
+[32m+  markdown cell:
+[32m+    source:
+[32m+      As we are dealing with a mult-label classification problem, we will need to wrap any binary classifier in `OneVsRestClassifier`. Let's start off with a naive Bayes model. 
+
+[0m[34m## replaced /cells/14/execution_count:[0m
+[31m-  16
+[32m+  14
+
+[0m[34m## deleted /cells/14/outputs/0:[0m
+[31m-  output:
+[31m-    output_type: stream
+[31m-    name: stderr
+[31m-    text:
+[31m-      wandb: Wandb version 0.8.12 is available!  To upgrade, please run:
+[31m-      wandb:  $ pip install wandb --upgrade
+
+[0m[34m## modified /cells/14/outputs/1/text:[0m
+[36m@@ -1 +1 @@[m
+[31m-Accuracy score: 35.484857754665036%, model trained in 0.6247339248657227 secs[m
+[32m+[m[32mAccuracy score: 35.484857754665036%, model trained in 0.6501975059509277 secs[m
+
+[0m[34m## modified /cells/14/source:[0m
+[36m@@ -1,3 +1,4 @@[m
+[32m+[m[32m# naive Bayes[m
+ nb_pipeline = Pipeline([[m
+                 ('tfidf', TfidfVectorizer(stop_words=stop_words)),[m
+                 ('clf', OneVsRestClassifier(MultinomialNB([m
+
+[0m[34m## replaced /cells/15/execution_count:[0m
+[31m-  14
+[32m+  15
+
+[0m[34m## deleted /cells/15/outputs/0:[0m
+[31m-  output:
+[31m-    output_type: stream
+[31m-    name: stderr
+[31m-    text:
+[31m-      wandb: Wandb version 0.8.12 is available!  To upgrade, please run:
+[31m-      wandb:  $ pip install wandb --upgrade
+
+[0m[34m## modified /cells/15/outputs/1/text:[0m
+[36m@@ -1 +1 @@[m
+[31m-Accuracy score: 45.71734475374733%, model trained in 2.155222177505493 secs[m
+[32m+[m[32mAccuracy score: 45.71734475374733%, model trained in 2.001997947692871 secs[m
+
+[0m[34m## modified /cells/15/source:[0m
+[36m@@ -1,3 +1,4 @@[m
+[32m+[m[32m# SVM[m
+ svc_pipeline = Pipeline([[m
+                 ('tfidf', TfidfVectorizer(stop_words=stop_words)),[m
+                 ('clf', OneVsRestClassifier(LinearSVC(), n_jobs=1)),[m
+
+[0m[34m## modified /cells/16/outputs/0/text:[0m
+[36m@@ -1,4 +1,2 @@[m
+[31m-/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/logistic.py:433: FutureWarning: Default solver will be changed to 'lbfgs' in 0.22. Specify a solver to silence this warning.[m
+[32m+[m[32m/home/jupyter/.local/lib/python3.5/site-packages/sklearn/linear_model/logistic.py:432: FutureWarning: Default solver will be changed to 'lbfgs' in 0.22. Specify a solver to silence this warning.[m
+   FutureWarning)[m
+[31m-wandb: Wandb version 0.8.12 is available!  To upgrade, please run:[m
+[31m-wandb:  $ pip install wandb --upgrade[m
+
+[0m[34m## modified /cells/16/outputs/1/text:[0m
+[36m@@ -1 +1 @@[m
+[31m-Accuracy score: 42.82655246252677%, model trained in 2.4853322505950928 secs[m
+[32m+[m[32mAccuracy score: 42.81125726521872%, model trained in 4.470703363418579 secs[m
+
+[0m[34m## modified /cells/16/source:[0m
+[36m@@ -1,3 +1,4 @@[m
+[32m+[m[32m# Logistic Regression[m
+ lr_pipeline = Pipeline([[m
+                 ('tfidf', TfidfVectorizer(stop_words=stop_words)),[m
+                 ('clf', OneVsRestClassifier(LogisticRegression(), n_jobs=1)),[m
+
+[0m[34m## replaced /cells/18/execution_count:[0m
+[31m-  13
+[32m+  17
+
+[0m[34m## modified /cells/18/outputs/0/text:[0m
+[36m@@ -1,6 +1,4 @@[m
+[31m-/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/logistic.py:433: FutureWarning: Default solver will be changed to 'lbfgs' in 0.22. Specify a solver to silence this warning.[m
+[32m+[m[32m/home/jupyter/.local/lib/python3.5/site-packages/sklearn/linear_model/logistic.py:432: FutureWarning: Default solver will be changed to 'lbfgs' in 0.22. Specify a solver to silence this warning.[m
+   FutureWarning)[m
+[31m-/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/logistic.py:460: FutureWarning: Default multi_class will be changed to 'auto' in 0.22. Specify the multi_class option to silence this warning.[m
+[32m+[m[32m/home/jupyter/.local/lib/python3.5/site-packages/sklearn/linear_model/logistic.py:469: FutureWarning: Default multi_class will be changed to 'auto' in 0.22. Specify the multi_class option to silence this warning.[m
+   "this warning.", FutureWarning)[m
+[31m-wandb: Wandb version 0.8.12 is available!  To upgrade, please run:[m
+[31m-wandb:  $ pip install wandb --upgrade[m
+
+[0m[34m## modified /cells/18/outputs/1/text:[0m
+[36m@@ -1 +1 @@[m
+[31m-Accuracy score: 52.53900275313551%, model trained in 15.153378963470459 secs[m
+[32m+[m[32mAccuracy score: 52.53900275313551%, model trained in 10.661255836486816 secs[m
+
+[0m[34m## modified /cells/18/source:[0m
+[36m@@ -1,3 +1,4 @@[m
+[32m+[m[32m# LabelPowerset with Logistic Regression[m
+ lr_pipeline = Pipeline([[m
+                 ('tfidf', TfidfVectorizer(stop_words=stop_words)),[m
+                 ('clf', LabelPowerset(LogisticRegression())),[m
+
+[0m[34m## replaced /cells/19/execution_count:[0m
+[31m-  14
+[32m+  18
+
+[0m[34m## deleted /cells/19/outputs/0:[0m
+[31m-  output:
+[31m-    output_type: stream
+[31m-    name: stderr
+[31m-    text:
+[31m-      wandb: Wandb version 0.8.12 is available!  To upgrade, please run:
+[31m-      wandb:  $ pip install wandb --upgrade
+
+[0m[34m## modified /cells/19/outputs/1/text:[0m
+[36m@@ -1 +1 @@[m
+[31m-Accuracy score: 51.667176506576936%, model trained in 7.882498741149902 secs[m
+[32m+[m[32mAccuracy score: 51.667176506576936%, model trained in 4.571157932281494 secs[m
+
+[0m[34m## modified /cells/19/source:[0m
+[36m@@ -1,3 +1,4 @@[m
+[32m+[m[32m# LabelPowerset with SVM[m
+ svc_pipeline = Pipeline([[m
+                 ('tfidf', TfidfVectorizer(stop_words=stop_words)),[m
+                 ('clf', LabelPowerset(LinearSVC())),[m
+
+[0m[34m## inserted before /cells/20:[0m
+[32m+  markdown cell:
+[32m+    source:
+[32m+      If you go [here](https://app.wandb.ai/sayakpaul/arxiv-project-simple-models/runs/4211t4bq) you will be able to see how the performance of the above-tried machine learning pipelines have varied with respect to their training times. 
+[32m+      
+[32m+      ![](https://i.ibb.co/2ZBydry/Screen-Shot-2019-10-31-at-2-19-08-PM.png)
+[32m+      
+[32m+      This indeed helps you to present your experiments to the world in a much better way. 
+
+[0m[34m## modified /metadata/language_info/version:[0m
+[31m-  3.7.1
+[32m+  3.5.3
+
+[0m[34m## replaced /nbformat_minor:[0m
+[31m-  2
+[32m+  4
+
+[0mnbdiff /tmp/BwFzBD_Data_preprocessing_and_model_building (part I).ipynb Data_preprocessing_and_model_building (part I).ipynb
+--- /tmp/BwFzBD_Data_preprocessing_and_model_building (part I).ipynb  2019-10-31 10:39:55.398745
++++ Data_preprocessing_and_model_building (part I).ipynb  2019-10-31 08:50:46.978309
+[34m## inserted before /cells/0:[0m
+[32m+  code cell:
+[32m+    source:
+[32m+      !pip3 install scikit-multilearn
+[32m+  markdown cell:
+[32m+    source:
+[32m+      Run `wandb login` from the terminal after installing `wandb`. 
+[32m+  markdown cell:
+[32m+    source:
+[32m+      ## Imports
+
+[0m[34m## deleted /cells/0:[0m
+[31m-  markdown cell:
+[31m-    source:
+[31m-      **To be included**:
+[31m-      - Comments
+[31m-      - References
+[31m-      
+[31m-      This notebook shows the use of simpler models to classify the titles. 
+
+[0m[34m## inserted before /cells/1/outputs/0:[0m
+[32m+  output:
+[32m+    output_type: stream
+[32m+    name: stderr
+[32m+    text:
+[32m+      [nltk_data] Downloading package stopwords to
+[32m+      [nltk_data]     /home/jupyter/nltk_data...
+[32m+      [nltk_data]   Package stopwords is already up-to-date!
+
+[0m[34m## modified /cells/1/source:[0m
+[36m@@ -4,18 +4,13 @@[m [mfrom sklearn.linear_model import LogisticRegression[m
+ from sklearn.multiclass import OneVsRestClassifier[m
+ from sklearn.naive_bayes import MultinomialNB[m
+ from sklearn.metrics import accuracy_score[m
+[31m-from sklearn.utils import class_weight[m
+ from sklearn.pipeline import Pipeline[m
+ from sklearn.svm import LinearSVC[m
+ from skmultilearn.problem_transform import LabelPowerset[m
+ from nltk.corpus import stopwords[m
+ from ast import literal_eval[m
+[31m-from typing import Union[m
+[31m-import matplotlib.pyplot as plt[m
+[32m+[m[32mfrom utils import utils[m
+ import numpy as np[m
+ import sklearn[m
+ import wandb[m
+[31m-import nltk[m
+[31m-import time[m
+[31m-import re[m
+[31m-import io[m
+[m
+[32m+[m[32mimport time[m
+[m
+
+[0m[34m## inserted before /cells/2:[0m
+[32m+  markdown cell:
+[32m+    source:
+[32m+      ## Data loading
+[32m+  code cell:
+[32m+    execution_count: 2
+[32m+    source:
+[32m+      def load_data(filename:str) -> np.ndarray:
+[32m+          content = np.load(filename, allow_pickle=True)
+[32m+          return content
+
+[0m[34m## deleted /cells/2:[0m
+[31m-  code cell:
+[31m-    execution_count: 2
+[31m-    source:
+[31m-      %matplotlib inline
+[31m-      nltk.download('stopwords')
+[31m-    outputs:
+[31m-      output 0:
+[31m-        output_type: stream
+[31m-        name: stderr
+[31m-        text:
+[31m-          [nltk_data] Downloading package stopwords to
+[31m-          [nltk_data]     /Users/sayakpaul/nltk_data...
+[31m-          [nltk_data]   Package stopwords is already up-to-date!
+[31m-      output 1:
+[31m-        output_type: execute_result
+[31m-        execution_count: 2
+[31m-        data:
+[31m-          text/plain: True
+
+[0m[34m## replaced /cells/3/execution_count:[0m
+[31m-  2
+[32m+  3
+
+[0m[34m## replaced /cells/3/outputs/0/execution_count:[0m
+[31m-  2
+[32m+  3
+
+[0m[34m## modified /cells/3/source:[0m
+[36m@@ -1,4 +1,4 @@[m
+[31m-X_train, y_train = np.load('data/X_train.npy', allow_pickle=True), np.load('data/y_train.npy', allow_pickle=True)[m
+[31m-X_test, y_test = np.load('data/X_test.npy', allow_pickle=True), np.load('data/y_test.npy', allow_pickle=True)[m
+[32m+[m[32mX_train, y_train = load_data('data/X_train.npy'), load_data('data/y_train.npy')[m
+[32m+[m[32mX_test, y_test = load_data('data/X_test.npy'), load_data('data/y_test.npy')[m
+ [m
+ X_train.shape, X_test.shape[m
+[m
+
+[0m[34m## inserted before /cells/4:[0m
+[32m+  markdown cell:
+[32m+    source:
+[32m+      ## Cleaning the paper titles
+[32m+  code cell:
+[32m+    execution_count: 4
+[32m+    source:
+[32m+      clean_title = np.vectorize(utils.clean_title)
+
+[0m[34m## deleted /cells/4:[0m
+[31m-  code cell:
+[31m-    execution_count: 3
+[31m-    source:
+[31m-      wpt = nltk.WordPunctTokenizer()
+[31m-      stop_words = nltk.corpus.stopwords.words('english')
+[31m-      
+[31m-      def clean_title(title):
+[31m-          # lower case and remove special characters\whitespaces
+[31m-          title = re.sub(r'[^a-zA-Z\s]', '', title, re.I|re.A)
+[31m-          title = title.lower()
+[31m-          title = title.strip()
+[31m-          # tokenize document
+[31m-          tokens = wpt.tokenize(title)
+[31m-          # filter stopwords out of document
+[31m-          filtered_tokens = [token for token in tokens if token not in stop_words]
+[31m-          # re-create document from filtered tokens
+[31m-          title = ' '.join(filtered_tokens)
+[31m-          return title
+[31m-      
+[31m-      clean_title = np.vectorize(clean_title)
+
+[0m[34m## replaced /cells/5/execution_count:[0m
+[31m-  4
+[32m+  5
+
+[0m[34m## replaced /cells/6/execution_count:[0m
+[31m-  5
+[32m+  6
+
+[0m[34m## replaced /cells/6/outputs/0/execution_count:[0m
+[31m-  5
+[32m+  6
+
+[0m[34m## modified /cells/6/source:[0m
+[36m@@ -1 +1,2 @@[m
+[32m+[m[32m# Preview[m
+ X_train[:10][m
+[m
+
+[0m[34m## replaced /cells/7/execution_count:[0m
+[31m-  6
+[32m+  7
+
+[0m[34m## replaced /cells/7/outputs/0/execution_count:[0m
+[31m-  6
+[32m+  7
+
+[0m[34m## inserted before /cells/8:[0m
+[32m+  markdown cell:
+[32m+    source:
+[32m+      ## Label preprocessing
+
+[0m[34m## replaced /cells/8/execution_count:[0m
+[31m-  7
+[32m+  8
+
+[0m[34m## replaced /cells/8/outputs/0/execution_count:[0m
+[31m-  7
+[32m+  8
+
+[0m[34m## replaced /cells/9/execution_count:[0m
+[31m-  8
+[32m+  9
+
+[0m[34m## replaced /cells/9/outputs/0/execution_count:[0m
+[31m-  8
+[32m+  9
+
+[0m[34m## replaced /cells/10/execution_count:[0m
+[31m-  9
+[32m+  10
+
+[0m[34m## replaced /cells/10/outputs/0/execution_count:[0m
+[31m-  9
+[32m+  10
+
+[0m[34m## inserted before /cells/11:[0m
+[32m+  markdown cell:
+[32m+    source:
+[32m+      Make sure you don't call `fit_transform` on mlb when you are applying it on the test set as it will disturb the training/serving skew. 
+[32m+  markdown cell:
+[32m+    source:
+[32m+      ## Initial configurations before modeling
+
+[0m[34m## replaced /cells/11/execution_count:[0m
+[31m-  10
+[32m+  11
+
+[0m[34m## modified /cells/11/source:[0m
+[36m@@ -1 +1,2 @@[m
+[32m+[m[32m# Gather the English stopwords[m
+ stop_words = set(stopwords.words('english'))[m
+[m
+
+[0m[34m## inserted before /cells/12:[0m
+[32m+  code cell:
+[32m+    execution_count: 12
+[32m+    source:
+[32m+      # Initialize wandb to log your experiments
+[32m+      wandb.init(project="arxiv-project-simple-models")
+[32m+    outputs:
+[32m+      output 0:
+[32m+        output_type: display_data
+[32m+        data:
+[32m+          text/html:
+[32m+            
+[32m+                            Logging results to <a href="https://wandb.com" target="_blank">Weights & Biases</a>.<br/>
+[32m+                            Project page: <a href="https://app.wandb.ai/sayakpaul/arxiv-project-simple-models" target="_blank">https://app.wandb.ai/sayakpaul/arxiv-project-simple-models</a><br/>
+[32m+                            Run page: <a href="https://app.wandb.ai/sayakpaul/arxiv-project-simple-models/runs/4211t4bq" target="_blank">https://app.wandb.ai/sayakpaul/arxiv-project-simple-models/runs/4211t4bq</a><br/>
+[32m+                            Docs: <a href="https://docs.wandb.com/integrations/jupyter.html" target="_blank">https://docs.wandb.com/integrations/jupyter.html</a><br/>
+[32m+                        
+[32m+          text/plain: <IPython.core.display.HTML object>
+[32m+      output 1:
+[32m+        output_type: execute_result
+[32m+        execution_count: 12
+[32m+        data:
+[32m+          text/plain: W&B Run: https://app.wandb.ai/sayakpaul/arxiv-project-simple-models/runs/4211t4bq
+[32m+  markdown cell:
+[32m+    source:
+[32m+      ## Modeling experiments
+[32m+  markdown cell:
+[32m+    source:
+[32m+      We will define a helper function to train ane evaluate a model. Before you begin the training process you might want to perform any left-over preprocessing. `scikit-learn` makes it easier to define these steps along with your desired machine learning models with _Pipelines_. So, the input to our helper function would be a pipeline. 
+
+[0m[34m## deleted /cells/12:[0m
+[31m-  code cell:
+[31m-    execution_count: 11
+[31m-    source:
+[31m-      wandb.init(project="data-preprocessing-and-model-building-1")
+[31m-    outputs:
+[31m-      output 0:
+[31m-        output_type: display_data
+[31m-        data:
+[31m-          text/html:
+[31m-            
+[31m-                    Notebook configured with <a href="https://wandb.com" target="_blank">W&B</a>. You can <a href="https://app.wandb.ai/sayakpaul/data-preprocessing-and-model-building-1/runs/nkgewsba?apiKey=ab6c21fa98b79790d8c7a9d0a0844b7a1ddaa4e2" target="_blank">open</a> the run page, or call <code>%%wandb</code>
+[31m-                    in a cell containing your training loop to display live results.  Learn more in our <a href="https://docs.wandb.com/docs/integrations/jupyter.html" target="_blank">docs</a>.
+[31m-                
+[31m-          text/plain: <IPython.core.display.HTML object>
+[31m-      output 1:
+[31m-        output_type: execute_result
+[31m-        execution_count: 11
+[31m-        data:
+[31m-          text/plain: W&B Run: https://app.wandb.ai/sayakpaul/data-preprocessing-and-model-building-1/runs/nkgewsba?apiKey=ab6c21fa98b79790d8c7a9d0a0844b7a1ddaa4e2
+
+[0m[34m## replaced /cells/13/execution_count:[0m
+[31m-  12
+[32m+  13
+
+[0m[34m## modified /cells/13/source:[0m
+[36m@@ -8,4 +8,4 @@[m [mdef train_eval_pipeline(pipeline:sklearn.pipeline, train_data:tuple,[m
+     prediction = pipeline.predict(X_test)[m
+     wandb.log({"accuracy":accuracy_score(y_test_binarized, prediction)*100.0,\[m
+                "training_time":end})[m
+[31m-    return f'Accuracy score: {accuracy_score(y_test_binarized, prediction)*100.0}%, model trained in {end} secs'[m
+[m
+[32m+[m[32m    return 'Accuracy score: {}%, model trained in {} secs'.format(accuracy_score(y_test_binarized, prediction)*100.0, end)[m
+[m
+
+[0m[34m## inserted before /cells/14:[0m
+[32m+  markdown cell:
+[32m+    source:
+[32m+      As we are dealing with a mult-label classification problem, we will need to wrap any binary classifier in `OneVsRestClassifier`. Let's start off with a naive Bayes model. 
+
+[0m[34m## replaced /cells/14/execution_count:[0m
+[31m-  16
+[32m+  14
+
+[0m[34m## deleted /cells/14/outputs/0:[0m
+[31m-  output:
+[31m-    output_type: stream
+[31m-    name: stderr
+[31m-    text:
+[31m-      wandb: Wandb version 0.8.12 is available!  To upgrade, please run:
+[31m-      wandb:  $ pip install wandb --upgrade
+
+[0m[34m## modified /cells/14/outputs/1/text:[0m
+[36m@@ -1 +1 @@[m
+[31m-Accuracy score: 35.484857754665036%, model trained in 0.6247339248657227 secs[m
+[32m+[m[32mAccuracy score: 35.484857754665036%, model trained in 0.6501975059509277 secs[m
+
+[0m[34m## modified /cells/14/source:[0m
+[36m@@ -1,3 +1,4 @@[m
+[32m+[m[32m# naive Bayes[m
+ nb_pipeline = Pipeline([[m
+                 ('tfidf', TfidfVectorizer(stop_words=stop_words)),[m
+                 ('clf', OneVsRestClassifier(MultinomialNB([m
+
+[0m[34m## replaced /cells/15/execution_count:[0m
+[31m-  14
+[32m+  15
+
+[0m[34m## deleted /cells/15/outputs/0:[0m
+[31m-  output:
+[31m-    output_type: stream
+[31m-    name: stderr
+[31m-    text:
+[31m-      wandb: Wandb version 0.8.12 is available!  To upgrade, please run:
+[31m-      wandb:  $ pip install wandb --upgrade
+
+[0m[34m## modified /cells/15/outputs/1/text:[0m
+[36m@@ -1 +1 @@[m
+[31m-Accuracy score: 45.71734475374733%, model trained in 2.155222177505493 secs[m
+[32m+[m[32mAccuracy score: 45.71734475374733%, model trained in 2.001997947692871 secs[m
+
+[0m[34m## modified /cells/15/source:[0m
+[36m@@ -1,3 +1,4 @@[m
+[32m+[m[32m# SVM[m
+ svc_pipeline = Pipeline([[m
+                 ('tfidf', TfidfVectorizer(stop_words=stop_words)),[m
+                 ('clf', OneVsRestClassifier(LinearSVC(), n_jobs=1)),[m
+
+[0m[34m## modified /cells/16/outputs/0/text:[0m
+[36m@@ -1,4 +1,2 @@[m
+[31m-/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/logistic.py:433: FutureWarning: Default solver will be changed to 'lbfgs' in 0.22. Specify a solver to silence this warning.[m
+[32m+[m[32m/home/jupyter/.local/lib/python3.5/site-packages/sklearn/linear_model/logistic.py:432: FutureWarning: Default solver will be changed to 'lbfgs' in 0.22. Specify a solver to silence this warning.[m
+   FutureWarning)[m
+[31m-wandb: Wandb version 0.8.12 is available!  To upgrade, please run:[m
+[31m-wandb:  $ pip install wandb --upgrade[m
+
+[0m[34m## modified /cells/16/outputs/1/text:[0m
+[36m@@ -1 +1 @@[m
+[31m-Accuracy score: 42.82655246252677%, model trained in 2.4853322505950928 secs[m
+[32m+[m[32mAccuracy score: 42.81125726521872%, model trained in 4.470703363418579 secs[m
+
+[0m[34m## modified /cells/16/source:[0m
+[36m@@ -1,3 +1,4 @@[m
+[32m+[m[32m# Logistic Regression[m
+ lr_pipeline = Pipeline([[m
+                 ('tfidf', TfidfVectorizer(stop_words=stop_words)),[m
+                 ('clf', OneVsRestClassifier(LogisticRegression(), n_jobs=1)),[m
+
+[0m[34m## replaced /cells/18/execution_count:[0m
+[31m-  13
+[32m+  17
+
+[0m[34m## modified /cells/18/outputs/0/text:[0m
+[36m@@ -1,6 +1,4 @@[m
+[31m-/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/logistic.py:433: FutureWarning: Default solver will be changed to 'lbfgs' in 0.22. Specify a solver to silence this warning.[m
+[32m+[m[32m/home/jupyter/.local/lib/python3.5/site-packages/sklearn/linear_model/logistic.py:432: FutureWarning: Default solver will be changed to 'lbfgs' in 0.22. Specify a solver to silence this warning.[m
+   FutureWarning)[m
+[31m-/miniconda3/lib/python3.7/site-packages/sklearn/linear_model/logistic.py:460: FutureWarning: Default multi_class will be changed to 'auto' in 0.22. Specify the multi_class option to silence this warning.[m
+[32m+[m[32m/home/jupyter/.local/lib/python3.5/site-packages/sklearn/linear_model/logistic.py:469: FutureWarning: Default multi_class will be changed to 'auto' in 0.22. Specify the multi_class option to silence this warning.[m
+   "this warning.", FutureWarning)[m
+[31m-wandb: Wandb version 0.8.12 is available!  To upgrade, please run:[m
+[31m-wandb:  $ pip install wandb --upgrade[m
+
+[0m[34m## modified /cells/18/outputs/1/text:[0m
+[36m@@ -1 +1 @@[m
+[31m-Accuracy score: 52.53900275313551%, model trained in 15.153378963470459 secs[m
+[32m+[m[32mAccuracy score: 52.53900275313551%, model trained in 10.661255836486816 secs[m
+
+[0m[34m## modified /cells/18/source:[0m
+[36m@@ -1,3 +1,4 @@[m
+[32m+[m[32m# LabelPowerset with Logistic Regression[m
+ lr_pipeline = Pipeline([[m
+                 ('tfidf', TfidfVectorizer(stop_words=stop_words)),[m
+                 ('clf', LabelPowerset(LogisticRegression())),[m
+
+[0m[34m## replaced /cells/19/execution_count:[0m
+[31m-  14
+[32m+  18
+
+[0m[34m## deleted /cells/19/outputs/0:[0m
+[31m-  output:
+[31m-    output_type: stream
+[31m-    name: stderr
+[31m-    text:
+[31m-      wandb: Wandb version 0.8.12 is available!  To upgrade, please run:
+[31m-      wandb:  $ pip install wandb --upgrade
+
+[0m[34m## modified /cells/19/outputs/1/text:[0m
+[36m@@ -1 +1 @@[m
+[31m-Accuracy score: 51.667176506576936%, model trained in 7.882498741149902 secs[m
+[32m+[m[32mAccuracy score: 51.667176506576936%, model trained in 4.571157932281494 secs[m
+
+[0m[34m## modified /cells/19/source:[0m
+[36m@@ -1,3 +1,4 @@[m
+[32m+[m[32m# LabelPowerset with SVM[m
+ svc_pipeline = Pipeline([[m
+                 ('tfidf', TfidfVectorizer(stop_words=stop_words)),[m
+                 ('clf', LabelPowerset(LinearSVC())),[m
+
+[0m[34m## inserted before /cells/20:[0m
+[32m+  markdown cell:
+[32m+    source:
+[32m+      If you go [here](https://app.wandb.ai/sayakpaul/arxiv-project-simple-models/runs/4211t4bq) you will be able to see how the performance of the above-tried machine learning pipelines have varied with respect to their training times. 
+[32m+      
+[32m+      ![](https://i.ibb.co/2ZBydry/Screen-Shot-2019-10-31-at-2-19-08-PM.png)
+[32m+      
+[32m+      This indeed helps you to present your experiments to the world in a much better way. 
+
+[0mnbdiff /tmp/kXLVti_Data_preprocessing_and_model_building (part II).ipynb Data_preprocessing_and_model_building (part II).ipynb
+--- /tmp/kXLVti_Data_preprocessing_and_model_building (part II).ipynb  2019-10-31 10:39:56.102806
++++ Data_preprocessing_and_model_building (part II).ipynb  2019-10-31 10:39:56.374829
+[34m## deleted /cells/3:[0m
+[31m-  code cell:
+[31m-    execution_count: 4
+[31m-    metadata (unknown keys):
+[31m-      colab:
+[31m-      colab_type: code
+[31m-      id: avyoiF6sLNbQ
+[31m-    source:
+[31m-      !wandb login
+[31m-    outputs:
+[31m-      output 0:
+[31m-        output_type: stream
+[31m-        name: stdout
+[31m-        text:
+[31m-          /bin/sh: 1: wandb: Permission denied
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/5/execution_count:[0m
+[31m-  None
+[32m+  1
+
+[0m[34m## inserted before /cells/5/outputs/0:[0m
+[32m+  output:
+[32m+    output_type: stream
+[32m+    name: stderr
+[32m+    text:
+[32m+      [nltk_data] Downloading package stopwords to
+[32m+      [nltk_data]     /home/jupyter/nltk_data...
+[32m+      [nltk_data]   Package stopwords is already up-to-date!
+
+[0m[34m## modified /cells/5/source:[0m
+[36m@@ -8,11 +8,11 @@[m [mfrom sklearn.utils import class_weight[m
+ from wandb.keras import WandbCallback[m
+ from ast import literal_eval[m
+ from typing import Union[m
+[32m+[m[32mfrom utils import utils[m
+ import matplotlib.pyplot as plt[m
+ import tensorflow as tf[m
+ import numpy as np[m
+ import wandb[m
+[31m-import nltk[m
+ import time[m
+ import re[m
+ import io[m
+[m
+
+[0m[34m## inserted before /cells/6:[0m
+[32m+  code cell:
+[32m+    execution_count: 2
+[32m+    metadata (unknown keys):
+[32m+      colab:
+[32m+        base_uri: https://localhost:8080/
+[32m+        height: 68
+[32m+      colab_type: code
+[32m+      id: WybjOls3WkoO
+[32m+      outputId: 1c9a618f-d625-4747-9a48-5df4cc3626a7
+[32m+    source:
+[32m+      %matplotlib inline
+[32m+  markdown cell:
+[32m+    source:
+[32m+      We will be initializing wandb with a different project name this time. We will be setting `sync_tensorboard=True` so that it _automatically_ hosts TensorBoard on my online WandB dashboard. Isn't that cool?
+[32m+  code cell:
+[32m+    execution_count: 3
+[32m+    metadata (unknown keys):
+[32m+      colab:
+[32m+        base_uri: https://localhost:8080/
+[32m+        height: 34
+[32m+      colab_type: code
+[32m+      id: EBXnuyRxMc1U
+[32m+      outputId: 4731cfce-8e50-444b-bb76-97827056123c
+[32m+    source:
+[32m+      wandb.init(project='arxiv-project-complex-models', sync_tensorboard=True)
+[32m+      config = wandb.config
+[32m+    outputs:
+[32m+      output 0:
+[32m+        output_type: display_data
+[32m+        data:
+[32m+          text/html:
+[32m+            
+[32m+                            Logging results to <a href="https://wandb.com" target="_blank">Weights & Biases</a>.<br/>
+[32m+                            Project page: <a href="https://app.wandb.ai/sayakpaul/arxiv-project-complex-models" target="_blank">https://app.wandb.ai/sayakpaul/arxiv-project-complex-models</a><br/>
+[32m+                            Run page: <a href="https://app.wandb.ai/sayakpaul/arxiv-project-complex-models/runs/xiluk9e3" target="_blank">https://app.wandb.ai/sayakpaul/arxiv-project-complex-models/runs/xiluk9e3</a><br/>
+[32m+                            Docs: <a href="https://docs.wandb.com/integrations/jupyter.html" target="_blank">https://docs.wandb.com/integrations/jupyter.html</a><br/>
+[32m+                        
+[32m+          text/plain: <IPython.core.display.HTML object>
+[32m+  markdown cell:
+[32m+    source:
+[32m+      Setting the following hyperparameters will allow `wandb` to automatically keep track of them. 
+
+[0m[34m## deleted /cells/6:[0m
+[31m-  code cell:
+[31m-    metadata (unknown keys):
+[31m-      colab:
+[31m-        base_uri: https://localhost:8080/
+[31m-        height: 68
+[31m-      colab_type: code
+[31m-      id: WybjOls3WkoO
+[31m-      outputId: 1c9a618f-d625-4747-9a48-5df4cc3626a7
+[31m-    source:
+[31m-      %matplotlib inline
+[31m-      nltk.download('stopwords')
+[31m-    outputs:
+[31m-      output 0:
+[31m-        output_type: stream
+[31m-        name: stdout
+[31m-        text:
+[31m-          [nltk_data] Downloading package stopwords to /root/nltk_data...
+[31m-          [nltk_data]   Unzipping corpora/stopwords.zip.
+[31m-      output 1:
+[31m-        output_type: execute_result
+[31m-        execution_count: 3
+[31m-        data:
+[31m-          text/plain: True
+[31m-        metadata (unknown keys):
+[31m-          tags:
+[31m-            []
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/7/execution_count:[0m
+[31m-  None
+[32m+  4
+
+[0m[34m## deleted /cells/7/metadata/colab:[0m
+[31m-  base_uri: https://localhost:8080/
+[31m-  height: 34
+
+[0m[34m## deleted /cells/7/metadata/colab_type:[0m
+[31m-  code
+
+[0m[34m## deleted /cells/7/metadata/id:[0m
+[31m-  EBXnuyRxMc1U
+
+[0m[34m## deleted /cells/7/metadata/outputId:[0m
+[31m-  4731cfce-8e50-444b-bb76-97827056123c
+
+[0m[34m## deleted /cells/7/outputs/0:[0m
+[31m-  output:
+[31m-    output_type: display_data
+[31m-    data:
+[31m-      text/html:
+[31m-        
+[31m-                    Notebook configured with <a href="https://wandb.com" target="_blank">W&B</a>. You can <a href="https://app.wandb.ai/sayakpaul/uncategorized/runs/awldnnhb" target="_blank">open</a> the run page, or call <code>%%wandb</code>
+[31m-                    in a cell containing your training loop to display live results.  Learn more in our <a href="https://docs.wandb.com/docs/integrations/jupyter.html" target="_blank">docs</a>.
+[31m-                
+[31m-      text/plain: <IPython.core.display.HTML object>
+[31m-    metadata (unknown keys):
+[31m-      tags:
+[31m-        []
+
+[0m[34m## modified /cells/7/source:[0m
+[36m@@ -1,6 +1,3 @@[m
+[31m-wandb.init()[m
+[31m-config = wandb.config[m
+[31m-[m
+ config.filter_length = 300[m
+ config.max_words = 3000[m
+ config.maxlen = 300[m
+
+[0m[34m## inserted before /cells/9:[0m
+[32m+  code cell:
+[32m+    execution_count: 5
+[32m+    source:
+[32m+      def load_data(filename:str) -> np.ndarray:
+[32m+          content = np.load(filename, allow_pickle=True)
+[32m+          return content
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/9/execution_count:[0m
+[31m-  None
+[32m+  6
+
+[0m[34m## replaced /cells/9/outputs/0/execution_count:[0m
+[31m-  5
+[32m+  6
+
+[0m[34m## deleted /cells/9/outputs/0/metadata/tags:[0m
+[31m-  []
+
+[0m[34m## modified /cells/9/source:[0m
+[36m@@ -1,6 +1,4 @@[m
+[31m-X_train, y_train = np.load('data/X_train.npy', allow_pickle=True), [m
+[31m-    np.load('data/y_train.npy', allow_pickle=True)[m
+[31m-X_test, y_test = np.load('data/X_test.npy', allow_pickle=True), [m
+[31m-    np.load('data/y_test.npy', allow_pickle=True)[m
+[32m+[m[32mX_train, y_train = load_data('data/X_train.npy'), load_data('data/y_train.npy')[m
+[32m+[m[32mX_test, y_test = load_data('data/X_test.npy'), load_data('data/y_test.npy')[m
+ [m
+ X_train.shape, X_test.shape[m
+[m
+
+[0m[34m## inserted before /cells/10:[0m
+[32m+  markdown cell:
+[32m+    source:
+[32m+      ## Cleaning the paper titles
+[32m+  code cell:
+[32m+    execution_count: 7
+[32m+    metadata (unknown keys):
+[32m+      colab:
+[32m+      colab_type: code
+[32m+      id: J27Ns750WBEO
+[32m+    source:
+[32m+      clean_title = np.vectorize(utils.clean_title)
+
+[0m[34m## deleted /cells/10:[0m
+[31m-  code cell:
+[31m-    metadata (unknown keys):
+[31m-      colab:
+[31m-      colab_type: code
+[31m-      id: J27Ns750WBEO
+[31m-    source:
+[31m-      wpt = nltk.WordPunctTokenizer()
+[31m-      stop_words = nltk.corpus.stopwords.words('english')
+[31m-      
+[31m-      def clean_title(title):
+[31m-          # lower case and remove special characters\whitespaces
+[31m-          title = re.sub(r'[^a-zA-Z\s]', '', title, re.I|re.A)
+[31m-          title = title.lower()
+[31m-          title = title.strip()
+[31m-          # tokenize document
+[31m-          tokens = wpt.tokenize(title)
+[31m-          # filter stopwords out of document
+[31m-          filtered_tokens = [token for token in tokens if token not in stop_words]
+[31m-          # re-create document from filtered tokens
+[31m-          title = ' '.join(filtered_tokens)
+[31m-          return title
+[31m-      
+[31m-      clean_title = np.vectorize(clean_title)
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/11/execution_count:[0m
+[31m-  None
+[32m+  8
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/12/execution_count:[0m
+[31m-  None
+[32m+  9
+
+[0m[34m## replaced /cells/12/outputs/0/execution_count:[0m
+[31m-  8
+[32m+  9
+
+[0m[34m## deleted /cells/12/outputs/0/metadata/tags:[0m
+[31m-  []
+
+[0m[34m## modified /cells/12/source:[0m
+[36m@@ -1 +1,2 @@[m
+[32m+[m[32m# Preview[m
+ X_train[:10][m
+[m
+
+[0m[34m## inserted before /cells/13:[0m
+[32m+  markdown cell:
+[32m+    source:
+[32m+      ## Tokenization & padding
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/13/execution_count:[0m
+[31m-  None
+[32m+  10
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/14/execution_count:[0m
+[31m-  None
+[32m+  11
+
+[0m[34m## modified /cells/14/source:[0m
+[36m@@ -1,8 +1,4 @@[m
+[31m-def get_features(text_sequence):[m
+[31m-    """[m
+[31m-    Converts a text sequence to its tokenized version[m
+[31m-    and then returns it with padding added [m
+[31m-    """[m
+[32m+[m[32mdef get_features(text_sequence: np.ndarray) -> np.ndarray:[m
+     sequences = tokenizer.texts_to_sequences(text_sequence)[m
+     return pad_sequences(sequences, maxlen=config.maxlen)[m
+ [m
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/15/execution_count:[0m
+[31m-  None
+[32m+  12
+
+[0m[34m## replaced /cells/15/outputs/0/execution_count:[0m
+[31m-  11
+[32m+  12
+
+[0m[34m## deleted /cells/15/outputs/0/metadata/tags:[0m
+[31m-  []
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/16/execution_count:[0m
+[31m-  None
+[32m+  13
+
+[0m[34m## replaced /cells/16/outputs/0/execution_count:[0m
+[31m-  12
+[32m+  13
+
+[0m[34m## deleted /cells/16/outputs/0/metadata/tags:[0m
+[31m-  []
+
+[0m[34m## inserted before /cells/17:[0m
+[32m+  code cell:
+[32m+    execution_count: 14
+[32m+    source:
+[32m+      type(train_features), type(y_train)
+[32m+    outputs:
+[32m+      output 0:
+[32m+        output_type: execute_result
+[32m+        execution_count: 14
+[32m+        data:
+[32m+          text/plain: (numpy.ndarray, numpy.ndarray)
+[32m+  markdown cell:
+[32m+    source:
+[32m+      ## Label preprocessing
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/17/execution_count:[0m
+[31m-  None
+[32m+  15
+
+[0m[34m## replaced /cells/17/outputs/0/execution_count:[0m
+[31m-  13
+[32m+  15
+
+[0m[34m## deleted /cells/17/outputs/0/metadata/tags:[0m
+[31m-  []
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/18/execution_count:[0m
+[31m-  None
+[32m+  16
+
+[0m[34m## replaced /cells/18/outputs/0/execution_count:[0m
+[31m-  14
+[32m+  16
+
+[0m[34m## deleted /cells/18/outputs/0/metadata/tags:[0m
+[31m-  []
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/19/execution_count:[0m
+[31m-  None
+[32m+  17
+
+[0m[34m## replaced /cells/19/outputs/0/execution_count:[0m
+[31m-  15
+[32m+  17
+
+[0m[34m## deleted /cells/19/outputs/0/metadata/tags:[0m
+[31m-  []
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/20/execution_count:[0m
+[31m-  None
+[32m+  18
+
+[0m[34m## replaced /cells/20/outputs/0/execution_count:[0m
+[31m-  16
+[32m+  18
+
+[0m[34m## deleted /cells/20/outputs/0/metadata/tags:[0m
+[31m-  []
+
+[0m[34m## modified /cells/21/source:[0m
+[31m-  Determine the class weights. 
+[32m+  ## Determine the class weights
+
+[0m[34m## inserted before /cells/23:[0m
+[32m+  markdown cell:
+[32m+    source:
+[32m+      ## More complex models
+[32m+      
+[32m+      I will start-off with a CNN-based (Conv1D) architecture and then I will try out LSTM and GRU-based architectures. 
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/23/execution_count:[0m
+[31m-  None
+[32m+  19
+
+[0m[34m## modified /cells/23/source:[0m
+[36m@@ -1,3 +1,4 @@[m
+[32m+[m[32m# Helper function to return a compiled CNN-based model[m
+ def get_a_cnn_model() -> tf.keras.models.Sequential:[m
+     model = Sequential()[m
+     model.add(Embedding(config.max_words, config.embedding_dims, [m
+
+[0m[34m## inserted before /cells/24:[0m
+[32m+  markdown cell:
+[32m+    source:
+[32m+      Pay close attention to the loss function and the metrics. [This blog post](https://www.depends-on-the-definition.com/guide-to-multi-label-classification-with-neural-networks/) helped me a lot to reason why you should use a `binary_crossentropy` loss for a multi-label classification problem. 
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/24/execution_count:[0m
+[31m-  None
+[32m+  20
+
+[0m[34m## modified /cells/24/source:[0m
+[36m@@ -1,3 +1,5 @@[m
+[32m+[m[32m# Helper function to return either a LSTM-based or a[m[41m [m
+[32m+[m[32m# GRU-based model[m
+ def get_a_sequential_model(sequential_layer:Union[tf.keras.layers.LSTM, tf.keras.layers.GRU], [m
+         bidirectional:bool) -> tf.keras.models.Sequential:[m
+     model = Sequential()[m
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/25/execution_count:[0m
+[31m-  None
+[32m+  21
+
+[0m[34m## modified /cells/25/source:[0m
+[36m@@ -1,3 +1,4 @@[m
+[32m+[m[32m# A helper training script[m
+ def train_model(model:tf.keras.models.Sequential,[m
+     class_weight=None,[m
+     epochs=config.epochs,[m
+[36m@@ -10,5 +11,5 @@[m [mdef train_model(model:tf.keras.models.Sequential,[m
+                         batch_size=batch_size,[m
+                         validation_split=0.1,[m
+                         callbacks=callbacks)[m
+[31m-    time_message = f'It took {time.time()-start} seconds'[m
+[32m+[m[32m    time_message = 'It took {} seconds'.format(time.time()-start)[m
+     return (history, time_message)[m
+[m
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/26/execution_count:[0m
+[31m-  None
+[32m+  22
+
+[0m[34m## modified /cells/26/source:[0m
+[36m@@ -1,3 +1,4 @@[m
+[32m+[m[32m# # A helper function to plot the training history[m
+ def plot_training(H: tf.keras.callbacks.History, N: int) -> None:[m
+     # construct a plot that plots and saves the training history[m
+     plt.style.use("ggplot")[m
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/27/execution_count:[0m
+[31m-  None
+[32m+  24
+
+[0m[34m## modified /cells/27/source:[0m
+[36m@@ -1,7 +1,8 @@[m
+[32m+[m[32m# A helper function to evaluate a model[m
+ def get_metrics(model: tf.keras.models.Sequential,[m
+     test_data: tuple) -> (str, str):[m
+     (X_test, y_test) = test_data[m
+     metrics = model.evaluate(X_test, y_test, verbose=None)[m
+[31m-    loss = f'{model.metrics_names[0]}: {metrics[0]}'[m
+[31m-    cat_accuracy = f'{model.metrics_names[1]}: {metrics[1]}'[m
+[32m+[m[32m    loss = '{}: {}'.format(model.metrics_names[0], metrics[0])[m
+[32m+[m[32m    cat_accuracy = '{}: {}'.format(model.metrics_names[1], metrics[1])[m
+     return(loss, cat_accuracy)[m
+[m
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/28/execution_count:[0m
+[31m-  None
+[32m+  25
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/30/execution_count:[0m
+[31m-  None
+[32m+  26
+
+[0m[34m## modified /cells/30/outputs/0/text:[0m
+[36m@@ -1,22 +1,17 @@[m
+ Train on 23536 samples, validate on 2616 samples[m
+ Epoch 1/10[m
+[31m-WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/tensorflow_core/python/ops/nn_impl.py:183: where (from tensorflow.python.ops.array_ops) is deprecated and will be removed in a future version.[m
+[31m-Instructions for updating:[m
+[31m-Use tf.where in 2.0, which has the same broadcast rule as np.where[m
+[31m-   32/23536 [..............................] - ETA: 51:21 - loss: 0.6924 - categorical_accuracy: 0.0312WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (0.166887). Check your callbacks.[m
+[31m-23536/23536 [==============================] - 15s 621us/sample - loss: 0.1166 - categorical_accuracy: 0.5309 - val_loss: 0.0827 - val_categorical_accuracy: 0.6911[m
+[32m+[m[32m   32/23536 [..............................] - ETA: 1:39:24 - loss: 0.6941 - categorical_accuracy: 0.0000e+00WARNING:tensorflow:Method (on_train_batch_end) is slow compared to the batch update (1.545149). Check your callbacks.[m
+[32m+[m[32m23536/23536 [==============================] - 13s 572us/sample - loss: 0.1163 - categorical_accuracy: 0.5405 - val_loss: 0.0809 - val_categorical_accuracy: 0.6942[m
+ Epoch 2/10[m
+[31m-23536/23536 [==============================] - 10s 438us/sample - loss: 0.0760 - categorical_accuracy: 0.6829 - val_loss: 0.0776 - val_categorical_accuracy: 0.6686[m
+[32m+[m[32m23536/23536 [==============================] - 5s 199us/sample - loss: 0.0747 - categorical_accuracy: 0.6883 - val_loss: 0.0766 - val_categorical_accuracy: 0.6839[m
+ Epoch 3/10[m
+[31m-23536/23536 [==============================] - 10s 438us/sample - loss: 0.0702 - categorical_accuracy: 0.7061 - val_loss: 0.0763 - val_categorical_accuracy: 0.6827[m
+[32m+[m[32m23536/23536 [==============================] - 5s 194us/sample - loss: 0.0694 - categorical_accuracy: 0.7098 - val_loss: 0.0764 - val_categorical_accuracy: 0.6969[m
+ Epoch 4/10[m
+[31m-23536/23536 [==============================] - 10s 437us/sample - loss: 0.0666 - categorical_accuracy: 0.7164 - val_loss: 0.0762 - val_categorical_accuracy: 0.6900[m
+[32m+[m[32m23536/23536 [==============================] - 5s 195us/sample - loss: 0.0661 - categorical_accuracy: 0.7196 - val_loss: 0.0765 - val_categorical_accuracy: 0.6957[m
+ Epoch 5/10[m
+[31m-23536/23536 [==============================] - 10s 431us/sample - loss: 0.0638 - categorical_accuracy: 0.7314 - val_loss: 0.0767 - val_categorical_accuracy: 0.6869[m
+[32m+[m[32m23536/23536 [==============================] - 5s 194us/sample - loss: 0.0635 - categorical_accuracy: 0.7297 - val_loss: 0.0775 - val_categorical_accuracy: 0.6957[m
+ Epoch 6/10[m
+[31m-23536/23536 [==============================] - 10s 432us/sample - loss: 0.0613 - categorical_accuracy: 0.7401 - val_loss: 0.0769 - val_categorical_accuracy: 0.7095[m
+[32m+[m[32m23536/23536 [==============================] - 5s 196us/sample - loss: 0.0611 - categorical_accuracy: 0.7398 - val_loss: 0.0778 - val_categorical_accuracy: 0.6934[m
+ Epoch 7/10[m
+[31m-23536/23536 [==============================] - 10s 435us/sample - loss: 0.0587 - categorical_accuracy: 0.7495 - val_loss: 0.0772 - val_categorical_accuracy: 0.6961[m
+[31m-Epoch 8/10[m
+[31m-23536/23536 [==============================] - 10s 433us/sample - loss: 0.0563 - categorical_accuracy: 0.7554 - val_loss: 0.0783 - val_categorical_accuracy: 0.7011[m
+[31m-It took 86.36620378494263 seconds[m
+[32m+[m[32m23536/23536 [==============================] - 4s 188us/sample - loss: 0.0585 - categorical_accuracy: 0.7474 - val_loss: 0.0785 - val_categorical_accuracy: 0.6877[m
+[32m+[m[32mIt took 41.04175162315369 seconds[m
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/31/execution_count:[0m
+[31m-  None
+[32m+  27
+
+[0m[34m## inserted before /cells/31/outputs/0:[0m
+[32m+  output:
+[32m+    output_type: display_data
+[32m+    data:
+[32m+      image/png: iVBORw0K...<snip base64, md5=84abab663c55f1bf...>
+[32m+      text/plain: <Figure size 432x288 with 1 Axes>
+
+[0m[34m## deleted /cells/31/outputs/0:[0m
+[31m-  output:
+[31m-    output_type: display_data
+[31m-    data:
+[31m-      image/png: iVBORw0K...<snip base64, md5=ec7fec32063f38da...>
+[31m-      text/plain: <Figure size 432x288 with 1 Axes>
+[31m-    metadata (unknown keys):
+[31m-      tags:
+[31m-        []
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/34/execution_count:[0m
+[31m-  None
+[32m+  28
+
+[0m[34m## inserted before /cells/35:[0m
+[32m+  code cell:
+[32m+    execution_count: 29
+[32m+    metadata (unknown keys):
+[32m+      colab:
+[32m+        base_uri: https://localhost:8080/
+[32m+        height: 34
+[32m+      colab_type: code
+[32m+      id: s91BjN3Din2F
+[32m+      outputId: 41191fa2-9534-46fb-8249-40d836af34bc
+[32m+    source:
+[32m+      print(generate_predictions(cnn_model, 'On the Variance of the Adaptive Learning Rate and Beyond'))
+[32m+    outputs:
+[32m+      output 0:
+[32m+        output_type: stream
+[32m+        name: stdout
+[32m+        text:
+[32m+          ['cs.LG: 93.62%', 'stat.ML: 92.00%']
+[32m+  markdown cell:
+[32m+    source:
+[32m+      ![](https://i.ibb.co/rZJ0CvN/Screen-Shot-2019-10-31-at-3-01-26-PM.png)
+[32m+  code cell:
+[32m+    execution_count: 30
+[32m+    source:
+[32m+      print(generate_predictions(cnn_model, 
+[32m+              'BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding'))
+[32m+    outputs:
+[32m+      output 0:
+[32m+        output_type: stream
+[32m+        name: stdout
+[32m+        text:
+[32m+          ['cs.CL: 97.55%', 'cs.LG: 54.26%']
+[32m+  markdown cell:
+[32m+    source:
+[32m+      ![](https://i.ibb.co/0JJvSBc/Screen-Shot-2019-10-31-at-3-05-05-PM.png)
+[32m+  code cell:
+[32m+    execution_count: 31
+[32m+    source:
+[32m+      print(generate_predictions(cnn_model, 
+[32m+              'MultiFiT: Efficient Multi-lingual Language Model Fine-tuning'))
+[32m+    outputs:
+[32m+      output 0:
+[32m+        output_type: stream
+[32m+        name: stdout
+[32m+        text:
+[32m+          ['cs.CL: 99.89%', 'cs.IR: 9.69%']
+[32m+  markdown cell:
+[32m+    source:
+[32m+      ![](https://i.ibb.co/1QdcwZj/Screen-Shot-2019-10-31-at-3-09-10-PM.png)
+[32m+  markdown cell:
+[32m+    source:
+[32m+      Let's now try out other models. 
+
+[0m[34m## deleted /cells/35-36:[0m
+[31m-  code cell:
+[31m-    metadata (unknown keys):
+[31m-      colab:
+[31m-        base_uri: https://localhost:8080/
+[31m-        height: 34
+[31m-      colab_type: code
+[31m-      id: s91BjN3Din2F
+[31m-      outputId: 41191fa2-9534-46fb-8249-40d836af34bc
+[31m-    source:
+[31m-      print(generate_predictions(cnn_model, 'Towards Wide Learning: Experiments in Healthcare'))
+[31m-    outputs:
+[31m-      output 0:
+[31m-        output_type: stream
+[31m-        name: stdout
+[31m-        text:
+[31m-          ['cs.LG: 95.27%', 'stat.ML: 64.20%']
+[31m-  markdown cell:
+[31m-    metadata (unknown keys):
+[31m-      colab_type: text
+[31m-      id: 2xKaveHZplPQ
+[31m-    source:
+[31m-      ## Verification
+[31m-      
+[31m-      The paper **Towards Wide Learning: Experiments in Healthcare** can be found here: https://arxiv.org/abs/1612.05730. Here are the subjects to which it got tagged:
+[31m-      
+[31m-      ![](https://i.ibb.co/ZLqPr2j/Screen-Shot-2019-09-27-at-12-58-16-PM.png)
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/38/execution_count:[0m
+[31m-  None
+[32m+  32
+
+[0m[34m## modified /cells/38/outputs/0/text:[0m
+[36m@@ -1,25 +1,22 @@[m
+ Train on 23536 samples, validate on 2616 samples[m
+ Epoch 1/10[m
+[31m-WARNING:tensorflow:From /usr/local/lib/python3.6/dist-packages/tensorflow_core/python/ops/nn_impl.py:183: where (from tensorflow.python.ops.array_ops) is deprecated and will be removed in a future version.[m
+[31m-Instructions for updating:[m
+[31m-Use tf.where in 2.0, which has the same broadcast rule as np.where[m
+[31m-23536/23536 [==============================] - 376s 16ms/sample - loss: 0.2343 - categorical_accuracy: 0.2928 - val_loss: 0.1319 - val_categorical_accuracy: 0.3505[m
+[32m+[m[32m23536/23536 [==============================] - 305s 13ms/sample - loss: 0.2444 - categorical_accuracy: 0.2479 - val_loss: 0.1323 - val_categorical_accuracy: 0.3505[m
+ Epoch 2/10[m
+[31m-23536/23536 [==============================] - 372s 16ms/sample - loss: 0.1242 - categorical_accuracy: 0.3509 - val_loss: 0.1246 - val_categorical_accuracy: 0.3505[m
+[32m+[m[32m23536/23536 [==============================] - 299s 13ms/sample - loss: 0.1244 - categorical_accuracy: 0.3509 - val_loss: 0.1246 - val_categorical_accuracy: 0.3505[m
+ Epoch 3/10[m
+[31m-23536/23536 [==============================] - 376s 16ms/sample - loss: 0.1209 - categorical_accuracy: 0.3509 - val_loss: 0.1236 - val_categorical_accuracy: 0.3505[m
+[32m+[m[32m23536/23536 [==============================] - 298s 13ms/sample - loss: 0.1209 - categorical_accuracy: 0.3509 - val_loss: 0.1235 - val_categorical_accuracy: 0.3505[m
+ Epoch 4/10[m
+[31m-23536/23536 [==============================] - 375s 16ms/sample - loss: 0.1203 - categorical_accuracy: 0.3509 - val_loss: 0.1234 - val_categorical_accuracy: 0.3505[m
+[32m+[m[32m23536/23536 [==============================] - 296s 13ms/sample - loss: 0.1203 - categorical_accuracy: 0.3509 - val_loss: 0.1234 - val_categorical_accuracy: 0.3505[m
+ Epoch 5/10[m
+[31m-23536/23536 [==============================] - 374s 16ms/sample - loss: 0.1201 - categorical_accuracy: 0.3509 - val_loss: 0.1234 - val_categorical_accuracy: 0.3505[m
+[32m+[m[32m23536/23536 [==============================] - 297s 13ms/sample - loss: 0.1202 - categorical_accuracy: 0.3509 - val_loss: 0.1233 - val_categorical_accuracy: 0.3505[m
+ Epoch 6/10[m
+[31m-23536/23536 [==============================] - 374s 16ms/sample - loss: 0.1201 - categorical_accuracy: 0.3509 - val_loss: 0.1233 - val_categorical_accuracy: 0.3505[m
+[32m+[m[32m23536/23536 [==============================] - 297s 13ms/sample - loss: 0.1200 - categorical_accuracy: 0.3509 - val_loss: 0.1221 - val_categorical_accuracy: 0.3505[m
+ Epoch 7/10[m
+[31m-23536/23536 [==============================] - 375s 16ms/sample - loss: 0.1185 - categorical_accuracy: 0.3601 - val_loss: 0.1184 - val_categorical_accuracy: 0.4086[m
+[32m+[m[32m23536/23536 [==============================] - 298s 13ms/sample - loss: 0.1155 - categorical_accuracy: 0.4088 - val_loss: 0.1152 - val_categorical_accuracy: 0.4671[m
+ Epoch 8/10[m
+[31m-23536/23536 [==============================] - 377s 16ms/sample - loss: 0.1123 - categorical_accuracy: 0.4503 - val_loss: 0.1131 - val_categorical_accuracy: 0.4839[m
+[32m+[m[32m23536/23536 [==============================] - 299s 13ms/sample - loss: 0.1098 - categorical_accuracy: 0.4802 - val_loss: 0.1117 - val_categorical_accuracy: 0.4744[m
+ Epoch 9/10[m
+[31m-23536/23536 [==============================] - 376s 16ms/sample - loss: 0.1072 - categorical_accuracy: 0.5440 - val_loss: 0.1089 - val_categorical_accuracy: 0.5856[m
+[32m+[m[32m23536/23536 [==============================] - 298s 13ms/sample - loss: 0.1060 - categorical_accuracy: 0.5030 - val_loss: 0.1077 - val_categorical_accuracy: 0.5344[m
+ Epoch 10/10[m
+[31m-23536/23536 [==============================] - 379s 16ms/sample - loss: 0.1022 - categorical_accuracy: 0.6067 - val_loss: 0.1035 - val_categorical_accuracy: 0.6170[m
+[31m-It took 3754.669095993042 seconds[m
+[32m+[m[32m23536/23536 [==============================] - 298s 13ms/sample - loss: 0.1006 - categorical_accuracy: 0.6007 - val_loss: 0.1019 - val_categorical_accuracy: 0.6204[m
+[32m+[m[32mIt took 2983.807958126068 seconds[m
+
+[0m[34m## replaced (type changed from NoneType to int) /cells/39/execution_count:[0m
+[31m-  None
+[32m+  33
+
+[0m[34m## inserted before /cells/39/outputs/0:[0m
+[32m+  output:
+[32m+    output_type: stream
+[32m+    name: stdout
+[32m+    text:
+[32m+      loss: 0.10042740640271217
+[32m+      categorical_accuracy: 0.6020189523696899
+
+[0m[34m## deleted /cells/39/outputs/0:[0m
+[31m-  output:
+[31m-    output_type: stream
+[31m-    name: stdout
+[31m-    text:
+[31m-      loss: 0.1013467522225784
+[31m-      categorical_accuracy: 0.600336492061615
+
+[0m[34m## inserted before /cells/40:[0m
+[32m+  code cell:
+[32m+    execution_count: 34
+[32m+    metadata (unknown keys):
+[32m+      colab:
+[32m+        base_uri: https://localhost:8080/
+[32m+        height: 34
+[32m+      colab_type: code
+[32m+      id: wlx_vZOQ54zG
+[32m+      outputId: 202c96b7-a62a-46e1-e3cf-3801e805d12e
+[32m+    source:
+[32m+      print(generate_predictions(gru_model, 'BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding'))
+[32m+    outputs:
+[32m+      output 0:
+[32m+        output_type: stream
+[32m+        name: stdout
+[32m+        text:
+[32m+          ['cs.CL: 56.82%', 'cs.AI: 39.19%']
+[32m+  markdown cell:
+[32m+    source:
+[32m+      ## LSTM
+[32m+  code cell:
+[32m+    source:
+[32m+      bi_lstm_model = get_a_sequential_model(sequential_layer=LSTM, bidirectional=True)
+[32m+      (history, time_message) = train_model(bi_lstm_model, callbacks=callbacks)
+[32m+      print(time_message)
+[32m+    outputs:
+[32m+      output 0:
+[32m+        output_type: stream
+[32m+        name: stdout
+[32m+        text:
+[32m+          Train on 23536 samples, validate on 2616 samples
+[32m+          Epoch 1/10
+[32m+          23520/23536 [============================>.] - ETA: 0s - loss: 0.1981 - categorical_accuracy: 0.3088
+
+[0m[34m## deleted /cells/40:[0m
+[31m-  code cell:
+[31m-    metadata (unknown keys):
+[31m-      colab:
+[31m-        base_uri: https://localhost:8080/
+[31m-        height: 34
+[31m-      colab_type: code
+[31m-      id: wlx_vZOQ54zG
+[31m-      outputId: 202c96b7-a62a-46e1-e3cf-3801e805d12e
+[31m-    source:
+[31m-      print(generate_predictions(gru_model, 'Towards Wide Learning: Experiments in Healthcare'))
+[31m-    outputs:
+[31m-      output 0:
+[31m-        output_type: stream
+[31m-        name: stdout
+[31m-        text:
+[31m-          ['cs.AI: 44.43%', 'cs.LG: 36.45%']
+
+[0mdiff --git a/utils/.ipynb_checkpoints/utils-checkpoint.py b/utils/.ipynb_checkpoints/utils-checkpoint.py
+index 1521362..62b5cec 100644
+--- a/utils/.ipynb_checkpoints/utils-checkpoint.py
++++ b/utils/.ipynb_checkpoints/utils-checkpoint.py
+@@ -1,11 +1,16 @@
++from sklearn.preprocessing import MultiLabelBinarizer
+ import numpy as np
++import pickle
+ import nltk
++import re
++
++nltk.download('stopwords')
+ 
+ wpt = nltk.WordPunctTokenizer()
+ stop_words = nltk.corpus.stopwords.words('english')
+ 
+ # Function courtesy: http://bit.ly/2N17Clt
+-def clean_title(title: ):
++def clean_title(title: np.ndarray) -> np.ndarray:
+     # lower case and remove special characters\whitespaces
+     title = re.sub(r'[^a-zA-Z\s]', '', title, re.I|re.A)
+     title = title.lower()
+@@ -16,4 +21,5 @@ def clean_title(title: ):
+     filtered_tokens = [token for token in tokens if token not in stop_words]
+     # re-create document from filtered tokens
+     title = ' '.join(filtered_tokens)
+-    return title
+\ No newline at end of file
++    return title
++    
+\ No newline at end of file
+diff --git a/utils/utils.py b/utils/utils.py
+index 1521362..62b5cec 100644
+--- a/utils/utils.py
++++ b/utils/utils.py
+@@ -1,11 +1,16 @@
++from sklearn.preprocessing import MultiLabelBinarizer
+ import numpy as np
++import pickle
+ import nltk
++import re
++
++nltk.download('stopwords')
+ 
+ wpt = nltk.WordPunctTokenizer()
+ stop_words = nltk.corpus.stopwords.words('english')
+ 
+ # Function courtesy: http://bit.ly/2N17Clt
+-def clean_title(title: ):
++def clean_title(title: np.ndarray) -> np.ndarray:
+     # lower case and remove special characters\whitespaces
+     title = re.sub(r'[^a-zA-Z\s]', '', title, re.I|re.A)
+     title = title.lower()
+@@ -16,4 +21,5 @@ def clean_title(title: ):
+     filtered_tokens = [token for token in tokens if token not in stop_words]
+     # re-create document from filtered tokens
+     title = ' '.join(filtered_tokens)
+-    return title
+\ No newline at end of file
++    return title
++    
+\ No newline at end of file
+diff --git a/wandb/settings b/wandb/settings
+index 355f26e..504ec98 100644
+--- a/wandb/settings
++++ b/wandb/settings
+@@ -1,3 +1,6 @@
+ [default]
+-base_url: https://api.wandb.ai
+-anonymous: False
++base_url = https://api.wandb.ai
++anonymous = False
++entity = sayakpaul
++project = arxiv-project-complex-models
++
