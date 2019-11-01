@@ -1,0 +1,6 @@
+2019-11-01 04:19:56,463 DEBUG   MainThread:4822 [connectionpool.py:_new_conn():813] Starting new HTTPS connection (1): api.wandb.ai:443
+2019-11-01 04:19:56,636 DEBUG   MainThread:4822 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 228
+2019-11-01 04:19:56,639 DEBUG   MainThread:4822 [connectionpool.py:_new_conn():813] Starting new HTTPS connection (1): api.wandb.ai:443
+2019-11-01 04:19:56,808 DEBUG   MainThread:4822 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 228
+2019-11-01 04:19:58,963 DEBUG   MainThread:4822 [connectionpool.py:_new_conn():813] Starting new HTTPS connection (1): api.wandb.ai:443
+2019-11-01 04:19:59,140 DEBUG   MainThread:4822 [connectionpool.py:_make_request():393] https://api.wandb.ai:443 "POST /graphql HTTP/1.1" 200 1280
