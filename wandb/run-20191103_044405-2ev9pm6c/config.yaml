@@ -1,0 +1,35 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.8.12
+    is_jupyter_run: true
+    python_version: 3.7.1
+batch_size:
+  desc: null
+  value: 32
+embedding_dims:
+  desc: null
+  value: 30
+epochs:
+  desc: null
+  value: 10
+filter_length:
+  desc: null
+  value: 300
+filters:
+  desc: null
+  value: 10
+hidden_dims:
+  desc: null
+  value: 10
+kernel_size:
+  desc: null
+  value: 3
+max_words:
+  desc: null
+  value: 3000
+maxlen:
+  desc: null
+  value: 300
