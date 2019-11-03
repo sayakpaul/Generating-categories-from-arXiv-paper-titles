@@ -1,6 +1,0 @@
-[default]
-base_url = https://api.wandb.ai
-anonymous = False
-entity = sayakpaul
-project = text-prediction-logger
-
