@@ -1,5 +1,5 @@
 # Generating-categories-from-arXiv-paper-titles
-This project takes the [arXiv dataset](https://www.kaggle.com/neelshah18/arxivdataset) and builds an automatic tag classifier from the arXiv paper titles.  
+This project takes the [arXiv dataset](https://www.kaggle.com/neelshah18/arxivdataset) and builds an automatic tag classifier from the arXiv paper titles. Here's the accompanying blog post: [arXiv Search: Generating Tags from Paper Titles](https://wandb.ai/site/articles/generating-tags-from-arvix).
 
 - System input: Towards Wide Learning: Experiments in Healthcare
 - System output: **stat.ML**, **cs.LG**
